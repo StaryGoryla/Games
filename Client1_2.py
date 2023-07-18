@@ -47,6 +47,8 @@ def communication():
                             #y = start_y % 304
                             y = input("go")
                             s.send(y.encode())
+            else:
+                print(ser_cli)
 
 
 def game():
