@@ -1,7 +1,6 @@
 import socket
 from _thread import *
 import sys
-import random
 
 server = "localhost"
 port = 9999
@@ -38,7 +37,7 @@ def accept_players():
         print(e)
 
 
-def game(i):
+def game():
     for i in range(2):
         while True:
             player = connections[i]
@@ -52,4 +51,4 @@ accept_players()
 print(connections)
 print(addresses)
 print(nicknames)
-game(random.randint(0, 1))
+game()
