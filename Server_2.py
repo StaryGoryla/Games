@@ -1,9 +1,10 @@
 import socket
 from _thread import *
 import sys
+import random
 
 server = "localhost"
-port = 9999
+port = 9990
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -24,31 +25,43 @@ def start_server():
 def accept_players():
     try:
         for i in range(2):
+            global connection
             connection, address = s.accept()
             print("Connected to: ", address)
-            connection.send("NICKNAME".encode())
-            nickname = connection.recv(1024)
-            message = "Welcome to the server, " + str(nickname)
+            message = "Welcome to the server"
             connection.send(message.encode())
-            addresses.append(address)
             connections.append(connection)
-            nicknames.append(nickname)
     except socket.error as e:
         print(e)
 
 
-def game():
+def setup():
+    random.shuffle(connections)
     for i in range(2):
-        while True:
-            player = connections[i]
-            player.send("INPUT".encode())
-            data = player.recv(1024)
-            print(data)
+        player = connections[i]
+        player.send("NICKNAME".encode())
+        nickname = player.recv(1024)
+        nicknames.append(nickname)
+
+
+def broadcast(message, clients):
+    for client in clients:
+        client.send(message.encode())
+
+
+def game():
+    current_turn = 0
+    while True:
+        player = connections[current_turn]
+        player.send("INPUT".encode())
+        response = player.recv(1024).decode()
+        print(f"{nicknames[current_turn]} chose {response}.")
+        message = f"{nicknames[current_turn]} chose {response}"
+        broadcast(message, connections)
+        current_turn = (current_turn + 1) % 2
 
 
 start_server()
 accept_players()
-print(connections)
-print(addresses)
-print(nicknames)
+setup()
 game()
