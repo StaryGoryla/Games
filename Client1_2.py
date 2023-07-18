@@ -1,9 +1,10 @@
 import socket
 import threading
 import pygame
+import time
 
 server = "localhost"
-port = 9999
+port = 9997
 
 running = True
 WIDTH, HEIGHT = 912, 1012
@@ -12,13 +13,14 @@ WIDTH, HEIGHT = 912, 1012
 #ofield = pygame.image.load("graphics/x1.png").convert_alpha()
 #background = pygame.image.load("graphics/tictactoebg.png").convert_alpha()
 #pygame.display.set_caption("TTT")
-y = 0
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
     s.connect((server, port))
     print("Connected to " + server)
+    message = s.recv(1024)
+    print(message)
 except:
     print("An error occurred")
 
@@ -31,7 +33,6 @@ def create_thread(target):
 
 def communication():
     while True:
-        try:
             ser_cli = s.recv(1024).decode()
             if ser_cli == "NICKNAME":
                 client_input = input("What's your nickname? ")
@@ -45,10 +46,7 @@ def communication():
                             #x = start_x % 304
                             #y = start_y % 304
                             y = input("go")
-                            s.send(f", {y}".encode())
-        except:
-            print("An error occurred")
-            break
+                            s.send(y.encode())
 
 
 def game():
@@ -57,7 +55,8 @@ def game():
         #for event in pygame.event.get():
             #if event.type == pygame.QUIT:
                 #pygame.quit()
-        print(y)
+        print("Waiting 7 seconds")
+        time.sleep(7)
 
 
 communication()
